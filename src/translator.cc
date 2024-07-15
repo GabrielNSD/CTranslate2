@@ -2,6 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <iostream>
+
 namespace ctranslate2 {
 
   std::vector<std::future<TranslationResult>>
@@ -47,6 +49,7 @@ namespace ctranslate2 {
                               const TranslationOptions& options,
                               const size_t max_batch_size,
                               const BatchType batch_type) {
+    std::cout << "First overload" << std::endl;
     return translate_batch(source, {}, options, max_batch_size, batch_type);
   }
 
@@ -54,8 +57,12 @@ namespace ctranslate2 {
   std::vector<T> get_results_from_futures(std::vector<std::future<T>> futures) {
     std::vector<T> results;
     results.reserve(futures.size());
-    for (auto& future : futures)
-      results.emplace_back(future.get());
+    std::cout << "Futures size: " << futures.size() << std::endl;
+    for (size_t i = 0; i < futures.size(); ++i) {
+    std::cout << "Waiting for future: " << i << std::endl;
+    results.emplace_back(futures[i].get());
+    std::cout << "Future completed: " << i << std::endl;
+  }
     return results;
   }
 
@@ -65,6 +72,7 @@ namespace ctranslate2 {
                               const TranslationOptions& options,
                               const size_t max_batch_size,
                               const BatchType batch_type) {
+    std::cout << "Second overload" << std::endl;
     return get_results_from_futures(translate_batch_async(source,
                                                           target_prefix,
                                                           options,
